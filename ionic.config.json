@@ -1,0 +1,7 @@
+{
+  "name": "jordysc",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
