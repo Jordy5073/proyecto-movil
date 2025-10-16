@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { CountComponent } from './count/count.component';
 
 export const routes: Routes = [
   {
@@ -10,4 +11,8 @@ export const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full',
   },
+  {
+    path: 'count',
+    component: CountComponent,
+  }
 ];
