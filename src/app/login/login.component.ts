@@ -60,7 +60,6 @@ export class LoginComponent  implements OnInit {
 
     if (this.loginForm.valid) {
       console.log('Formulario válido', this.loginForm.value);
-      // Mostrar alerta de logueado
       const alert = await this.alertCtrl.create({
         header: 'Logueado',
         message: 'Has iniciado sesión correctamente.',
