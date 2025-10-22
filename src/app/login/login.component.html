@@ -1,0 +1,37 @@
+<ion-content>
+  <form [formGroup]="loginForm">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Login</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+
+        <ion-item>
+          <ion-label position="stacked">Email</ion-label>
+          <ion-input type="email" formControlName="email"></ion-input>
+        </ion-item>
+        <div *ngIf="email?.touched && email?.invalid" class="ion-padding-start">
+          <small *ngIf="email?.hasError('required')">Email es requerido.</small>
+          <small *ngIf="email?.hasError('email')">Formato inválido. </small>
+          <small *ngIf="email?.hasError('pattern')">Le falta un @ y .com</small>
+        </div>
+
+        <ion-item>
+          <ion-label position="stacked">Password</ion-label>
+          <ion-input type="password" formControlName="password"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Confirm Password</ion-label>
+          <ion-input type="password" formControlName="confirmPassword"></ion-input>
+        </ion-item>
+        <div *ngIf="confirmPassword?.touched && confirmPassword?.hasError('passwordMismatch')" class="ion-padding-start">
+          <small>Las contraseñas no coinciden.</small>
+        </div>
+
+        <ion-button expand="block" type="button" (click)="onSubmit()" [disabled]="loginForm.invalid">Enviar</ion-button>
+
+      </ion-card-content>
+    </ion-card>
+  </form>
+</ion-content>
