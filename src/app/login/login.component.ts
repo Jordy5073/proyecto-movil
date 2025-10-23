@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { EqualPasswordValidator } from '../utils/validators';
+import { EqualPasswordValidator, noWhitespace, minCharacters } from '../utils/validators';
 import { IonContent, IonCard, IonCardHeader, IonCardContent, IonCardTitle, IonLabel, IonItem, IonInput, IonButton, IonList } from "@ionic/angular/standalone";
 import { AlertController } from '@ionic/angular';
 
@@ -34,8 +34,13 @@ export class LoginComponent  implements OnInit {
     email: ['', [
       Validators.required,
       Validators.email,
-      Validators.pattern('^[a-z0-9_]+@(gmail|hotmail)\\.(com|es)$')]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+      noWhitespace,
+      Validators.pattern('^[a-z0-9_]+@(gmail|hotmail)\\.(com|es)$')
+    ]],
+    password: ['', [
+      Validators.required,
+      minCharacters(8)
+    ]],
     confirmPassword: ['', [Validators.required]],
   },
   { validators: [EqualPasswordValidator.validatorPassword('password','confirmPassword')] }

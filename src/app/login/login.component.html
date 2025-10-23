@@ -1,43 +1,67 @@
 <ion-content>
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <ion-list>
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Login</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Login</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
 
-        <ion-item>
-          <ion-label position="stacked">Email</ion-label>
-          <ion-input type="email" formControlName="email"></ion-input>
-        </ion-item>
-        <div *ngIf="email?.touched && email?.invalid" class="ion-padding-start">
-          <small *ngIf="email?.hasError('required')">Email es requerido.</small>
-          <small *ngIf="email?.hasError('email')">Formato inválido. </small>
-          <small *ngIf="email?.hasError('pattern')">Le falta un @ y .com</small>
-        </div>
+          
+          <ion-item>
+            <ion-label position="stacked">Email</ion-label>
+            <ion-input type="email" formControlName="email"></ion-input>
+          </ion-item>
 
-        <ion-item>
-          <ion-label position="stacked">Password</ion-label>
-          <ion-input type="password" formControlName="password"></ion-input>
-        </ion-item>
-        <div *ngIf="password?.touched && password?.invalid" class="ion-padding-start">
-          <small *ngIf="password?.hasError('required')">Password es requerido.</small>
-          <small *ngIf="password?.hasError('minlength')">La contraseña debe tener al menos 6 caracteres.</small>
-        </div>
+          @if (email?.touched && email?.invalid) {
+            <div class="ion-padding-start">
+              @if (email?.hasError('required')) {
+                <small>Email es requerido.</small>
+              }
+              @if (email?.hasError('email')) {
+                <small>Formato inválido.</small>
+              }
+              @if (email?.hasError('pattern')) {
+                <small>Le falta un @ y .com</small>
+              }
+              @if (email?.hasError('whitespace')) {
+                <small>El email no puede contener espacios en blanco.</small>
+              }
+            </div>
+          }
 
-        <ion-item>
-          <ion-label position="stacked">Confirm Password</ion-label>
-          <ion-input type="password" formControlName="confirmPassword"></ion-input>
-        </ion-item>
-        <div *ngIf="confirmPassword?.touched && confirmPassword?.hasError('passwordMismatch')" class="ion-padding-start">
-          <small>Las contraseñas no coinciden.</small>
-        </div>
+         
+          <ion-item>
+            <ion-label position="stacked">Password</ion-label>
+            <ion-input type="password" formControlName="password"></ion-input>
+          </ion-item>
 
-  <ion-button expand="block" type="submit">Enviar</ion-button>
+          @if (password?.touched && password?.invalid) {
+            <div class="ion-padding-start">
+              @if (password?.hasError('required')) {
+                <small>Password es requerido.</small>
+              }
+              @if (password?.hasError('minCharacters')) {
+                <small>La contraseña debe tener al menos 8 caracteres.</small>
+              }
+            </div>
+          }
 
-      </ion-card-content>
-    </ion-card>
-</ion-list>
+          
+          <ion-item>
+            <ion-label position="stacked">Confirm Password</ion-label>
+            <ion-input type="password" formControlName="confirmPassword"></ion-input>
+          </ion-item>
+
+          @if (confirmPassword?.touched && confirmPassword?.hasError('passwordMismatch')) {
+            <div class="ion-padding-start">
+              <small>Las contraseñas no coinciden.</small>
+            </div>
+          }
+          <ion-button expand="block" type="submit">Enviar</ion-button>
+
+        </ion-card-content>
+      </ion-card>
+    </ion-list>
   </form>
 </ion-content>
