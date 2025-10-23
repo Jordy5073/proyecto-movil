@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EqualPasswordValidator } from '../utils/validators';
-import { IonContent, IonCard, IonCardHeader, IonCardContent, IonCardTitle, IonLabel, IonItem, IonInput, IonButton } from "@ionic/angular/standalone";
+import { IonContent, IonCard, IonCardHeader, IonCardContent, IonCardTitle, IonLabel, IonItem, IonInput, IonButton, IonList } from "@ionic/angular/standalone";
 import { AlertController } from '@ionic/angular';
 
 @Component({
@@ -22,6 +22,7 @@ import { AlertController } from '@ionic/angular';
     IonCardHeader,
     IonCardTitle,
     IonItem,
+    IonList
   ],
 })
 export class LoginComponent  implements OnInit {
@@ -52,7 +53,7 @@ export class LoginComponent  implements OnInit {
   ngOnInit() {}
 
   async onSubmit() {
-    // Marcar todos los controles como touched para mostrar validaciones
+   
     Object.keys(this.loginForm.controls).forEach(key => {
       const control = this.loginForm.get(key);
       control?.markAsTouched();
