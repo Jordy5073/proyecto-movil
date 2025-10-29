@@ -1,0 +1,23 @@
+<ion-content class="ion-padding welcome-content">
+  <ion-grid>
+    <ion-row class="ion-justify-content-center ion-align-items-center full-height">
+      <ion-col size="12" size-md="8" size-lg="4">
+
+        <ion-card class="ion-text-center">
+          <ion-card-header>
+            <ion-card-title>¡Bienvenido/a!</ion-card-title>
+            <ion-card-subtitle>Selecciona tu rol para continuar</ion-card-subtitle>
+          </ion-card-header>
+
+          <ion-card-content>
+            <ion-button expand="block" (click)="goToLogin('user')" class="ion-margin-bottom">
+              <ion-icon slot="start" name="person-outline"></ion-icon>
+              Soy Usuario
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

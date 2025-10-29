@@ -1,4 +1,4 @@
-<ion-content>
+<!-- <ion-content>
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <ion-list>
       <ion-card>
@@ -42,7 +42,9 @@
                 <small>Password es requerido.</small>
               }
               @if (password?.hasError('minCharacters')) {
-                <small>La contraseña debe tener al menos 8 caracteres.</small>
+                <ion-note color ="danger">
+                La contraseña debe tener al menos 8 caracteres.
+                </ion-note>
               }
             </div>
           }
@@ -52,11 +54,19 @@
             <ion-label position="stacked">Confirm Password</ion-label>
             <ion-input type="password" formControlName="confirmPassword"></ion-input>
           </ion-item>
+          @if (confirmPassword?.invalid && confirmPassword?.touched) {
+              @if (confirmPassword?.hasError('required')) {
+                <small>Confirmar Password es requerido.</small>
+              }
+          }
+          
 
           @if (confirmPassword?.touched && confirmPassword?.hasError('passwordMismatch')) {
-            <div class="ion-padding-start">
-              <small>Las contraseñas no coinciden.</small>
-            </div>
+            
+              <ion-note color="danger">
+              Las contraseñas no coinciden.
+              </ion-note>
+            
           }
           <ion-button expand="block" type="submit">Enviar</ion-button>
 
@@ -64,4 +74,4 @@
       </ion-card>
     </ion-list>
   </form>
-</ion-content>
+</ion-content> -->

@@ -1,0 +1,14 @@
+.welcome-content {
+  // Asegura que el contenido pueda usar toda la altura
+  --offset-bottom: auto !important;
+  --offset-top: auto !important;
+}
+
+.full-height {
+  height: 100%;
+}
+
+// Opcional: añade un fondo degradado o una imagen
+// ion-content.welcome-content {
+//   --background: linear-gradient(to bottom, var(--ion-color-primary), var(--ion-color-secondary));
+// }

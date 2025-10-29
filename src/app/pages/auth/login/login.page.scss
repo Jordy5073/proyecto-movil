@@ -1,0 +1,151 @@
+/* --- Variables de Color Neón (Ajusta estos colores si quieres) --- */
+:host {
+  --neon-blue: #00e5ff;
+  --dark-background: #1a1a2e;
+  --card-background: #2a2a3e;
+  --input-background-focused: rgba(0, 229, 255, 0.1); // Fondo neón MUY suave al enfocar
+  --input-border-focused: var(--neon-blue);          // Borde neón al enfocar
+  --text-color: #e0e0e0;
+  --label-color: #a0a0b0;
+  --error-red: #ff6b6b;
+}
+
+/* --- Estilos Globales para la Página de Login --- */
+ion-content {
+  --background: var(--dark-background);
+  --offset-bottom: auto !important;
+  --offset-top: auto !important;
+}
+
+// Centrado vertical
+ion-grid, ion-row { height: 100%; }
+ion-row { align-items: center; }
+
+/* --- Estilo de la Tarjeta --- */
+ion-card {
+  background: var(--card-background);
+  border-radius: 15px;
+  box-shadow: 0 0 15px rgba(var(--neon-blue), 0.5),
+              0 0 25px rgba(var(--neon-blue), 0.3);
+  border: 1px solid rgba(var(--neon-blue), 0.2);
+  margin-top: 50px; // Opcional: ajusta el margen superior
+  padding: 10px;
+  overflow: hidden;
+  animation: fadeInCard 0.8s ease-out forwards; // Animación
+}
+
+ion-card-header {
+  padding-bottom: 20px;
+  ion-card-title {
+    color: var(--neon-blue);
+    font-weight: bold;
+    font-size: 1.8em;
+  }
+}
+
+/* --- Estilo de los Campos (Items e Inputs) --- */
+ion-item {
+  --background: transparent; // Sin fondo por defecto
+  --border-color: rgba(var(--label-color), 0.5); // Línea inferior grisácea/tenue por defecto
+  --highlight-color-focused: transparent; // Quitamos el resaltado de línea por defecto
+  --padding-start: 5px;
+  --inner-padding-end: 5px;
+  margin-bottom: 20px; // Aumentamos espacio entre campos
+  border-radius: 8px; // Redondeamos ligeramente el item completo
+  border: 1px solid transparent; // Borde transparente por defecto
+  transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out; // Transición suave
+
+  // Estilos específicos para el label "stacked"
+  ion-label[position="stacked"] {
+    color: var(--label-color);
+    font-size: 0.9em;
+    margin-bottom: 4px; // Pequeño espacio entre label y input
+    transform: none; // Asegura que no se mueva
+  }
+
+  ion-input {
+    color: var(--text-color);
+    font-size: 1.1em;
+    caret-color: var(--neon-blue); // Cursor neón
+    // Quitamos cualquier fondo o borde interno del input nativo
+    --background: transparent;
+    border: none;
+    padding: 8px 5px !important; // Ajusta el padding interno del input si es necesario
+  }
+
+  // === ¡AQUÍ ESTÁ EL EFECTO DE LA IMAGEN! ===
+  // Cuando el item está enfocado o lleno
+  &.item-has-focus,
+  &.item-has-value {
+     background-color: var(--input-background-focused); // Fondo neón muy suave
+     border: 1px solid var(--input-border-focused);     // Borde neón
+     --border-color: transparent; // Ocultamos la línea inferior por defecto
+  }
+  // Para que el label también cambie al enfocar (opcional)
+  &.item-has-focus ion-label {
+     color: var(--neon-blue);
+  }
+
+  // Estilos cuando el campo es inválido y tocado
+  &.ion-invalid.ion-touched {
+    border-color: var(--error-red); // Borde rojo si es inválido
+    background-color: rgba(var(--error-red), 0.05); // Fondo rojizo muy suave
+    --border-color: transparent; // Oculta la línea inferior si hay error de borde
+  }
+}
+
+
+/* --- Estilo del Botón --- */
+ion-button {
+  --background: var(--neon-blue);
+  --color: var(--dark-background);
+  --border-radius: 10px;
+  --box-shadow: 0 4px 15px rgba(var(--neon-blue), 0.4);
+  font-weight: bold;
+  height: 48px;
+  margin-top: 30px; // Más espacio sobre el botón
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  
+  &:hover {
+    transform: translateY(-2px);
+    --box-shadow: 0 8px 20px rgba(var(--neon-blue), 0.5);
+  }
+}
+
+/* --- Estilo Mensajes de Error --- */
+.error-messages {
+  min-height: 1.2em;
+  padding-top: 2px;
+  padding-bottom: 8px;
+  ion-note {
+    color: var(--error-red);
+    font-size: 0.85em;
+    display: block;
+  }
+}
+
+/* --- Estilos Enlaces (Forgot Password, etc.) --- */
+.links-container {
+  display: flex; // Para alinear enlaces si añades más
+  justify-content: center; // Centra el enlace
+  margin-top: 15px; // Espacio sobre los enlaces
+}
+
+.forgot-password { // Podrías añadir .signup-link si lo agregas
+    color: var(--label-color);
+    font-size: 0.9em;
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+    padding: 0 10px; // Espacio si pones varios enlaces
+
+    &:hover {
+        color: var(--neon-blue);
+    }
+}
+
+
+/* --- Animación de Entrada para la Tarjeta --- */
+@keyframes fadeInCard {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
