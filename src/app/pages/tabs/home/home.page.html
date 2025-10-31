@@ -9,6 +9,7 @@
     <ion-row>
       @for (spot of touristSpots; track spot.id) { 
         <ion-col size="12" size-md="6">
+          <!--Aqui se llama la ruta -->
 
           <ion-card [routerLink]="['/tabs/spot-detail', spot.id]"> 
 

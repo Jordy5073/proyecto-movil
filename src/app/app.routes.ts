@@ -6,7 +6,7 @@ import { authGuard } from './core/auth.guard';
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: 'welcome', // <-- 1. CAMBIADO: La app empieza en el login
+        redirectTo: 'welcome', 
         pathMatch: 'full',
     },
     {
@@ -16,22 +16,17 @@ export const routes: Routes = [
     {
         path: "formulario",
         loadComponent: () => import('../app/pages/tabs/suggest-spot/suggest-spot.page').then(m => m.SuggestSpotPage)
-
     },
-
-
-
     {
-        path: 'login', // <-- 2. DESCOMENTADO/ASEGURADO: Esta es tu página de login
+        path: 'login', 
         component: LoginComponent
     },
     {
         path: 'tabs',
         loadComponent: () => import('./pages/tabs/tabs.page').then(m => m.TabsPage),
-        // 4. CORREGIDO: Apunta al archivo .ts y la constante correcta
         loadChildren: () => import('./pages/tabs/tabs-routing.module').then(m => m.TABS_ROUTES),
 
-        // --- 3. AÑADIDO: GUARDIÁN PARA PROTEGER LAS PESTAÑAS ---
+        // Ruta protegida
         canActivate: [authGuard]
     },
     {

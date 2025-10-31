@@ -8,7 +8,6 @@ import  {TabsPage} from './pages/tabs/tabs.page';
   imports: [IonApp, IonRouterOutlet, TabsPage],
 })
 export class AppComponent {
-
   constructor() {
 
   }

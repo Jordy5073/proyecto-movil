@@ -8,9 +8,9 @@ import {
   IonCardTitle, IonCardSubtitle, IonCardContent, IonButton, IonIcon
 } from '@ionic/angular/standalone';
 
-// Importa los iconos
+// Importa solo el icono que necesitas
 import { addIcons } from 'ionicons';
-import { personOutline, shieldCheckmarkOutline } from 'ionicons/icons';
+import { personOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-welcome',
@@ -28,25 +28,12 @@ export class WelcomePage {
   private router = inject(Router);
 
   constructor() {
-    addIcons({personOutline,'shieldCheckmarkOutline':shieldCheckmarkOutline});
+    addIcons({
+      'person-outline': personOutline
+    });
   }
-
-  /**
-   * Navega a la página de login correspondiente
-   * @param role 'usuario' | 'admin'
-   */
-  goToLogin(role: 'user' | 'admin') {
-    if (role === 'user') {
-      console.log('Navigating to user login...');
-      // Navega a la ruta /login (la que ya tienes)
-      this.router.navigate(['/login']);
-    } else if (role === 'admin') {
-      console.log('Navigating to admin login...');
-      // Aquí podrías navegar a una ruta diferente si tienes un login de admin separado
-      // Por ahora, también lo mandamos a /login
-      this.router.navigate(['/login']);
-      // O podrías navegar a '/admin-login' si creas esa página
-      // this.router.navigate(['/admin-login']);
-    }
+  goToLogin() {
+    console.log('Navigating to login...');
+    this.router.navigate(['/login']);
   }
 }
