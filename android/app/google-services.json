@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "919259084315",
+    "project_id": "vargasmovil-3ac0f",
+    "storage_bucket": "vargasmovil-3ac0f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:919259084315:android:4f34f32de52c4e46636abe",
+        "android_client_info": {
+          "package_name": "com.yavirac.jsv"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfKJr6GBGQN89s_t1PcHV54H4_I-l6CvY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

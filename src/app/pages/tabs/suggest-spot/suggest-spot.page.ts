@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { AlertController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { star, starOutline } from 'ionicons/icons';
+import { LugaresService, Lugar } from 'src/servicios/lugares.service';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonLabel,
   IonItem,
@@ -56,22 +57,21 @@ export class SuggestSpotPage implements OnInit {
 
   categorias = ['Restaurante', 'Museo', 'Parque', 'Monumento', 'Otro'];
 
-  constructor() {
+  // Tu constructor ya está perfecto
+  constructor(private lugaresService: LugaresService) {
     addIcons({
       star,
       starOutline,
-
     });
   }
 
+  // Tu ngOnInit ya está perfecto
   ngOnInit() {
     console.log('SuggestSpotPage: ngOnInit iniciado');
     this.buildForm();
   }
 
-
-
-
+  // Tu buildForm ya está perfecto
   buildForm() {
     this.suggestForm = this.formBuilder.group({
       nombre: ['', [
@@ -103,26 +103,50 @@ export class SuggestSpotPage implements OnInit {
       ]]
     });
   }
-
-
   async onSubmit() {
     if (this.suggestForm.invalid) {
       this.suggestForm.markAllAsTouched();
       return;
     }
-    const alert = await this.alertCtrl.create({
-      header: '¡Sugerencia Enviada!',
-      message: 'Gracias por tu contribución.',
-      buttons: ['Aceptar']
-    });
-    await alert.present();
 
-    this.suggestForm.reset({ calificacion: 3 });
-    this.router.navigate(['/tabs/home'])
+    // 2. Obtenemos los datos del formulario
+    // (Asegurándonos de que coincida con la interfaz 'Lugar')
+    const datosDelFormulario = this.suggestForm.value as Lugar;
+
+    console.log('Enviando al backend:', datosDelFormulario);
+
+    //conexión
+    this.lugaresService.crearLugar(datosDelFormulario)
+      .subscribe({
+        
+        
+        next: async (lugarGuardado) => {
+          console.log('Respuesta del backend:', lugarGuardado);
+          
+          
+          const alert = await this.alertCtrl.create({
+            header: '¡Sugerencia Enviada!',
+            message: `Gracias por tu contribución. "${lugarGuardado.nombre}" se ha guardado.`,
+            buttons: ['Aceptar']
+          });
+          await alert.present();
+
+          this.suggestForm.reset({ calificacion: 3 });
+          this.router.navigate(['/tabs/home']);
+        },
+
+        
+        error: async (err) => {
+          console.error('Error al contactar el backend:', err);
+          const alert = await this.alertCtrl.create({
+            header: 'Error al Enviar',
+            message: 'No se pudo conectar con el servidor. Por favor, inténtalo de nuevo más tarde.',
+            buttons: ['Aceptar']
+          });
+          await alert.present();
+        }
+      });
   }
-
-
-
   get nombre() { return this.suggestForm.get('nombre'); }
   get categoria() { return this.suggestForm.get('categoria'); }
   get descripcion() { return this.suggestForm.get('descripcion'); }

@@ -5,18 +5,20 @@ import { CommonModule } from '@angular/common';
 import { AlertController } from '@ionic/angular';
 import {
   IonContent, IonCard, IonCardHeader, IonCardContent, IonCardTitle,
-  IonLabel, IonItem, IonInput, IonButton, IonList, IonNote, IonGrid, IonRow, IonCol, IonHeader, IonToolbar, IonTitle, IonInputPasswordToggle } from "@ionic/angular/standalone";
-import { noWhitespaceValidator, emailStructureValidator, allowedEmailDomains } from 'src/app/utils/validadores'; 
-import { AuthService } from 'src/app/core/auth.service'; 
+  IonLabel, IonItem, IonInput, IonButton, IonList, IonNote, IonGrid, IonRow, IonCol, IonHeader, IonToolbar, IonTitle, IonInputPasswordToggle
+} from "@ionic/angular/standalone";
+import { noWhitespaceValidator, emailStructureValidator, allowedEmailDomains } from 'src/app/utils/validadores';
+import { AuthService } from 'src/servicios/auth.service';
+import { Inject } from '@angular/core';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonTitle, IonToolbar, IonHeader, 
+  imports: [IonTitle, IonToolbar, IonHeader,
     CommonModule,
-    ReactiveFormsModule, 
+    ReactiveFormsModule,
     IonContent, IonCard, IonCardHeader, IonCardContent, IonCardTitle,
     IonLabel, IonItem, IonInput, IonButton, IonList, IonNote, IonGrid, IonRow, IonCol, IonInputPasswordToggle
   ],
@@ -28,9 +30,10 @@ export class LoginComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  loginForm!: FormGroup; 
 
-  constructor() {}
+  loginForm!: FormGroup;
+
+  constructor() { }
 
   ngOnInit() {
     this.buildForm();
@@ -46,7 +49,7 @@ export class LoginComponent implements OnInit {
       ]],
       password: ['', [
         Validators.required,
-        Validators.minLength(6), 
+        Validators.minLength(6),
         noWhitespaceValidator()
       ]],
     });
@@ -64,21 +67,28 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-   
-    const loggedIn = this.authService.login(this.email.value, this.password.value);
+    const { email, password } = this.loginForm.value;
 
-    if (loggedIn) {
-      console.log('LoginComponent: Login successful, navigating to /tabs');
-      
+    try {
+      // 2. Llamamos al servicio (asumiendo que tu AuthService tiene un método 'login')
+      await this.authService.login(email, password);
+
+      // 3. Éxito: Reseteamos el formulario y navegamos
+      this.loginForm.reset();
       this.router.navigate(['/tabs']);
-    } else {
-      
+
+    } catch (error) {
+      // 4. Error: Mostramos la alerta de Ionic
+      console.error('Error en login:', error);
+      this.mostrarAlerta('Error al Iniciar Sesión', 'El correo o la contraseña son incorrectos.');
+    }
+  }
+    async mostrarAlerta(header: string, message: string) {
       const alert = await this.alertCtrl.create({
-        header: 'Error',
-        message: 'Correo electrónico o contraseña incorrectos.',
-        buttons: ['Aceptar']
+        header,
+        message,
+        buttons: ['OK']
       });
       await alert.present();
     }
   }
-}

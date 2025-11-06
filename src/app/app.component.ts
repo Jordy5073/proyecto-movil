@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import  {TabsPage} from './pages/tabs/tabs.page';
+import { PushService } from 'src/servicios/push.service';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +9,11 @@ import  {TabsPage} from './pages/tabs/tabs.page';
   imports: [IonApp, IonRouterOutlet, TabsPage],
 })
 export class AppComponent {
-  constructor() {
+  constructor(private push: PushService) {
 
+  }
+
+  async ngOnInit() {
+    await this.push.init();
   }
 }
