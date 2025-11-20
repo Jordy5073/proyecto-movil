@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+  <!-- Configuración para desarrollo - Permitir HTTP -->
+  <domain-config cleartextTrafficPermitted="true">
+    <!-- Para emulador de Android -->
+    <domain includeSubdomains="true">10.0.2.2</domain>
+
+    <!-- Para localhost -->
+    <domain includeSubdomains="true">localhost</domain>
+
+    <!-- Agrega tu IP local si usas dispositivo físico -->
+    <domain includeSubdomains="true">192.168.18.24</domain>
+  </domain-config>
+
+</network-security-config>

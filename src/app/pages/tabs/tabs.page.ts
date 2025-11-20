@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonIcon, IonLabel, IonTabBar, IonTabButton, IonRouterOutlet, IonTabs,  } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { homeOutline, addCircleOutline, listOutline } from 'ionicons/icons';
+import { homeOutline, addCircleOutline, listOutline, personCircleOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-tabs',
@@ -17,7 +17,8 @@ export class TabsPage implements OnInit {
     addIcons({
       'home-outline': homeOutline,
       'add-circle-outline': addCircleOutline,
-      'list-outline': listOutline
+      'list-outline': listOutline,
+      'person': personCircleOutline
     });
   }
 

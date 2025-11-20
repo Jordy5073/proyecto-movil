@@ -4,128 +4,140 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding-bottom">
   <ion-grid>
     <ion-row class="ion-justify-content-center">
       <ion-col size="12" size-md="8" size-lg="6">
 
         <ion-card>
-
           <ion-card-header>
             <ion-card-title class="ion-text-center">
               Sugerir un Lugar Turístico
             </ion-card-title>
+            <ion-card-subtitle class="ion-text-center">
+              Comparte tu descubrimiento
+            </ion-card-subtitle>
           </ion-card-header>
 
           <ion-card-content>
 
-
             <form [formGroup]="suggestForm" (ngSubmit)="onSubmit()" class="ion-margin-top">
-              <ion-list lines="full">
+              <ion-list lines="none">
 
-                <ion-item>
+                <ion-item lines="full">
                   <ion-input label="Nombre del Lugar" labelPlacement="floating" type="text" formControlName="nombre"
-                    autocomplete="Nombre del lugar">
-                  </ion-input>
+                    autocomplete="off"></ion-input>
                 </ion-item>
                 @if (nombre?.invalid && nombre?.touched) {
-                @if (nombre?.hasError("required")) {
-                <ion-note color="danger" class="ion-padding-start">El nombre es obligatorio.</ion-note>
-                }
-                @if (nombre?.hasError("minlength")) {
-                <ion-note color="danger" class="ion-padding-start">El nombre debe tener al menos 5
-                  caracteres.</ion-note>
-                }
-                @if (nombre?.hasError("whitespace")) {
-                <ion-note color="danger" class="ion-padding-start">El nombre no puede ser solo espacios.</ion-note>
-                }
+                  <div class="error-container ion-padding-start">
+                    @if (nombre?.hasError("required")) { <ion-note color="danger">El nombre es obligatorio.</ion-note> }
+                    @if (nombre?.hasError("minlength")) { <ion-note color="danger">Mínimo 5 caracteres.</ion-note> }
+                  </div>
                 }
 
-                <ion-item>
-                  <ion-select label="Categoría" labelPlacement="floating" formControlName="categoria"
-                    interface="popover" placeholder="Selecciona una">
+                <ion-item lines="full">
+                  <ion-select label="Categoría" labelPlacement="floating" formControlName="categoria" interface="popover" placeholder="Selecciona una">
                     @for (cat of categorias; track cat) {
-                    <ion-select-option [value]="cat">{{ cat }}</ion-select-option>
+                      <ion-select-option [value]="cat">{{ cat }}</ion-select-option>
                     }
                   </ion-select>
                 </ion-item>
                 @if (categoria?.invalid && categoria?.touched) {
-                @if (categoria?.hasError("required")) {
-                <ion-note color="danger" class="ion-padding-start">Debe seleccionar una categoría.</ion-note>
-                }
+                  <div class="ion-padding-start">
+                    <ion-note color="danger">Selecciona una categoría.</ion-note>
+                  </div>
                 }
 
-                <ion-item>
-                  <ion-textarea label="Descripción" labelPlacement="floating" formControlName="descripcion"
-                    autoGrow="true" [rows]="4" autocomplete="Descripción del Lugar">
-                  </ion-textarea>
+                <ion-item lines="full">
+                  <ion-textarea label="Descripción" labelPlacement="floating" formControlName="descripcion" autoGrow="true" [rows]="3"></ion-textarea>
                 </ion-item>
                 @if (descripcion?.invalid && descripcion?.touched) {
-                @if (descripcion?.hasError("required")) {
-                <ion-note color="danger" class="ion-padding-start">La descripción es obligatoria.</ion-note>
-                }
-                @if (descripcion?.hasError("minWords")) {
-                <ion-note color="danger" class="ion-padding-start">La descripción debe tener al menos 8
-                  palabras.</ion-note>
-                }
-                @if (descripcion?.hasError("whitespace")) {
-                <ion-note color="danger" class="ion-padding-start">La descripción no puede ser solo espacios.</ion-note>
-                }
+                  <div class="ion-padding-start">
+                     @if (descripcion?.hasError("required")) { <ion-note color="danger">Descripción obligatoria.</ion-note> }
+                     @if (descripcion?.hasError("minWords")) { <ion-note color="danger">Mínimo 8 palabras.</ion-note> }
+                  </div>
                 }
 
-                <ion-item>
-                  <ion-input label="Dirección" type="text" labelPlacement="floating" formControlName="direccion">
-                  </ion-input>
+                <div class="section-divider ion-margin-top">
+                  <ion-label color="primary"><strong>Foto del Lugar</strong></ion-label>
+                </div>
+
+                <ion-button expand="block" fill="outline" (click)="onTakePhoto()" [disabled]="loadingPhoto" class="ion-margin-vertical">
+                  <ion-icon slot="start" name="camera"></ion-icon>
+                  {{ photos.length > 0 ? 'Tomar Otra Foto' : 'Tomar Foto' }}
+                </ion-button>
+
+                @if (photos.length > 0) {
+                  <ion-card class="photo-preview-card">
+                    <img [src]="photos[0].webviewPath" alt="Foto del lugar" />
+                    <div class="ion-text-end">
+                      <ion-button fill="clear" color="danger" size="small" (click)="deletePhoto(photos[0])">
+                        <ion-icon slot="icon-only" name="trash"></ion-icon>
+                        Eliminar
+                      </ion-button>
+                    </div>
+                  </ion-card>
+                }
+
+                <ion-item lines="full">
+                  <ion-input label="O pegar URL (Opcional)" type="url" labelPlacement="floating" formControlName="fotoUrl" placeholder="http://..."></ion-input>
+                </ion-item>
+
+
+                <div class="section-divider ion-margin-top">
+                  <ion-label color="primary"><strong>Ubicación</strong></ion-label>
+                </div>
+
+                <ion-button expand="block" fill="outline" color="secondary" (click)="getLocationOnce()" [disabled]="loadingLocation" class="ion-margin-vertical">
+                  <ion-icon slot="start" name="location"></ion-icon>
+                  Obtener Ubicación GPS
+                </ion-button>
+
+                @if (loadingLocation) {
+                  <div class="ion-text-center ion-padding">
+                    <ion-spinner name="crescent"></ion-spinner>
+                    <p><small>Localizando...</small></p>
+                  </div>
+                }
+
+                @if (mapUrlSafe) {
+                  <div class="map-wrapper ion-margin-bottom">
+                    <iframe [src]="mapUrlSafe" width="100%" height="200" style="border:0" loading="lazy"></iframe>
+                    <ion-note color="medium" class="ion-text-center" style="display:block; font-size: 0.8rem;">
+                      Lat: {{ lat }} | Lng: {{ lng }}
+                    </ion-note>
+                  </div>
+                }
+
+                <ion-item lines="full">
+                  <ion-input label="Dirección escrita" type="text" labelPlacement="floating" formControlName="direccion" placeholder="Ej: Av. Amazonas y Patria"></ion-input>
                 </ion-item>
                 @if (direccion?.invalid && direccion?.touched) {
-                @if (direccion?.hasError("required")) {
-                <ion-note color="danger" class="ion-padding-start">La dirección es obligatoria.</ion-note>
-                }
-                @if (direccion?.hasError("whitespace")) {
-                <ion-note color="danger" class="ion-padding-start">La dirección no puede ser solo espacios.</ion-note>
-                }
+                  <div class="ion-padding-start">
+                    <ion-note color="danger">La dirección es obligatoria.</ion-note>
+                  </div>
                 }
 
-                <ion-item>
-                  <ion-label>Calificación ({{ calificacion?.value }})</ion-label>
-                  <ion-range formControlName="calificacion" min="1" max="5" step="1" snaps="true" color="secondary">
-                    <ion-icon slot="start" size="small" name="star-outline"></ion-icon>
-                    <ion-icon slot="end" name="star"></ion-icon>
-                  </ion-range>
+
+                <ion-item lines="none" class="ion-margin-top">
+                  <ion-label>Calificación ({{ calificacion?.value }} estrellas)</ion-label>
                 </ion-item>
+                <ion-range formControlName="calificacion" min="1" max="5" step="1" snaps="true" color="warning" pin="true">
+                  <ion-icon slot="start" size="small" name="star-outline"></ion-icon>
+                  <ion-icon slot="end" name="star"></ion-icon>
+                </ion-range>
 
-                <ion-item>
-                  <ion-input label="FotoUrl (Opcional)" type="url" labelPlacement="floating" formControlName="fotoUrl"
-                    placeholder="http://...">
-                  </ion-input>
-
-                </ion-item>
-                @if (fotoUrl.invalid && (fotoUrl.touched || fotoUrl.dirty)) {
-                @if (fotoUrl.hasError("invalidUrlFormat")) {
-                <ion-note color="danger" class="ion-padding-start">
-                  La URL debe empezar con http:// o https://
-                </ion-note>
-                }
-                }
-
-                <ion-item>
-                  <ion-input label="Contacto" type="email" labelPlacement="floating" formControlName="contacto">
-                  </ion-input>
+                <ion-item lines="full">
+                  <ion-input label="Tu Email de Contacto" type="email" labelPlacement="floating" formControlName="contacto"></ion-input>
                 </ion-item>
                 @if (contacto?.invalid && contacto?.touched) {
-                @if (contacto?.hasError("required")) {
-                <ion-note color="danger" class="ion-padding-start">El contacto es obligatorio.</ion-note>
-                }
-                @if (contacto?.hasError("email")) {
-                <ion-note color="danger" class="ion-padding-start">El formato del correo no es válido.</ion-note>
-                }
-                @if (contacto?.hasError("domainNotAllowed")) {
-                <ion-note color="danger" class="ion-padding-start">Solo se permiten dominios: gmail, yahoo,
-                  hotmail.</ion-note>
-                }
+                  <div class="ion-padding-start">
+                     @if (contacto?.hasError("required")) { <ion-note color="danger">Email requerido.</ion-note> }
+                     @if (contacto?.hasError("email")) { <ion-note color="danger">Formato inválido.</ion-note> }
+                  </div>
                 }
 
-                <ion-button expand="full" type="submit" class="ion-margin-top">
+                <ion-button expand="full" type="submit" class="ion-margin-top" size="large" [disabled]="suggestForm.invalid">
                   Enviar Sugerencia
                 </ion-button>
 

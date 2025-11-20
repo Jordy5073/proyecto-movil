@@ -22,6 +22,10 @@ export const TABS_ROUTES: Routes = [
     loadComponent: () => import('./suggest-spot/suggest-spot.page').then(m => m.SuggestSpotPage)
   },
   {
+    path: 'profile',
+    loadComponent: () => import('./profile/profile.page').then((m) => m.ProfilePage),
+  },
+  {
     // id se usa para las tarjetas 
     path: 'spot-detail/:id',
     loadComponent: () => import('./spot-detail/spot-detail.page').then(m => m.SpotDetailPage)

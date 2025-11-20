@@ -6,7 +6,7 @@ import { authGuard } from 'src/servicios/auth.guard';
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: 'welcome', 
+        redirectTo: 'welcome',
         pathMatch: 'full',
     },
     {
@@ -18,7 +18,7 @@ export const routes: Routes = [
         loadComponent: () => import('../app/pages/tabs/suggest-spot/suggest-spot.page').then(m => m.SuggestSpotPage)
     },
     {
-        path: 'login', 
+        path: 'login',
         component: LoginComponent
     },
     {
@@ -32,5 +32,10 @@ export const routes: Routes = [
     {
         path: 'welcome',
         loadComponent: () => import('./pages/welcome/welcome.page').then(m => m.WelcomePage)
+    },
+    {
+        path: 'profile',
+        loadComponent: () => import('./pages/tabs/profile/profile.page').then(m => m.ProfilePage)
     }
+
 ];

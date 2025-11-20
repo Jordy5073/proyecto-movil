@@ -11,46 +11,52 @@
           <ion-card-content>
             <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
-              <ion-item [class.ion-invalid]="email.invalid && email.touched">
-                <ion-input label="Correo Electrónico" labelPlacement="stacked" type="email" formControlName="email"
-                  required autocomplete="email">
+              <ion-item [class.ion-invalid]="username.invalid && username.touched">
+                <ion-input label="username o email" labelPlacement="stacked" formControlName="username" required
+                  autocomplete="username">
                 </ion-input>
               </ion-item>
-              @if (email.invalid && email.touched) {
-              <div class="error-messages ion-padding-start">
-                @if (email.hasError('required')) { <ion-note color="danger">Obligatorio.</ion-note> }
-                @if (email.hasError('missingAtSymbol')) { <ion-note color="danger">Falta el símbolo '@'.</ion-note> }
-                @if (email.hasError('missingDomainDot')) { <ion-note color="danger">Falta el '.' después del'@'.</ion-note> }
-                @if (email.hasError('invalidStructure')) { <ion-note color="danger">Formato de correo incompleto.</ion-note> }
-                @if (email.hasError('domainNotAllowed')) { <ion-note color="danger">Dominio no permitido (Fatla gmail,
-                  yahoo, hotmail).</ion-note> }
-              </div>
+              @if (username.invalid && username.touched) {
+                <div class="error-messages ion-padding-start">
+                  @if (username.hasError('required')) { <ion-note color="danger">Obligatorio.</ion-note> }
+                  @if (username.hasError('missingAtSymbol')) { <ion-note color="danger">Falta el símbolo '@'.</ion-note> }
+                  @if (username.hasError('missingDomainDot')) { <ion-note color="danger">Falta el '.' después del '@'.</ion-note> }
+                  @if (username.hasError('invalidStructure')) { <ion-note color="danger">Formato de correo incompleto.</ion-note> }
+                  @if (username.hasError('domainNotAllowed')) { <ion-note color="danger">Dominio no permitido.</ion-note> }
+                </div>
               }
 
               <ion-item [class.ion-invalid]="password.invalid && password.touched" class="ion-margin-top">
-                <ion-input vale="NeverGonnaGiveYouUp" label="Contraseña" labelPlacement="stacked" type="password" formControlName="password"
+                <ion-input label="Contraseña" labelPlacement="stacked" type="password" formControlName="password"
                   required autocomplete="current-password">
                   <ion-input-password-toggle slot="end"></ion-input-password-toggle>
                 </ion-input>
               </ion-item>
               @if (password.invalid && password.touched) {
-              <div class="error-messages ion-padding-start">
-                @if (password.hasError('required')) { <ion-note color="danger">Obligatoria.</ion-note> }
-                @if (password.hasError('minlength')) { <ion-note color="danger">Mínimo 6 caracteres.</ion-note> }
-                @if (password.hasError('whitespace')) { <ion-note color="danger">No puede ser solo espacios.</ion-note>
-                }
-              </div>
+                <div class="error-messages ion-padding-start">
+                  @if (password.hasError('required')) { <ion-note color="danger">Obligatoria.</ion-note> }
+                  @if (password.hasError('minlength')) { <ion-note color="danger">Mínimo 6 caracteres.</ion-note> }
+                  @if (password.hasError('whitespace')) { <ion-note color="danger">No puede ser solo espacios.</ion-note> }
+                </div>
               }
 
-              <ion-button expand="block" type="submit" class="ion-margin-top">
-                Entrar
+              <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="isLoggingIn">
+                <span *ngIf="!isLoggingIn">Entrar</span>
+                <ion-spinner *ngIf="isLoggingIn" name="crescent"></ion-spinner>
               </ion-button>
 
-              <div class="ion-text-center ion-margin-top links-container">
-                <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
-              </div>
-
             </form>
+
+            @if (hasBiometric) {
+              <div class="ion-margin-top ion-text-center">
+                <p style="color: var(--ion-color-medium); font-size: 0.9em; margin-bottom: 10px;">— O ingresa con —</p>
+                
+                <ion-button expand="block" fill="outline" color="secondary" (click)="loginWithBiometrics()" [disabled]="isLoggingIn">
+                  <ion-icon slot="start" name="fingerprint"></ion-icon>
+                  Huella / Face ID
+                </ion-button>
+              </div>
+            }
 
           </ion-card-content>
         </ion-card>
