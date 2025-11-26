@@ -7,7 +7,6 @@ import { BehaviorSubject, tap } from 'rxjs';
 })
 export class AuthService {
 
-  // Tu URL actual
   private url = 'http://192.168.18.24:8080/auth';
   
   private http = inject(HttpClient);
@@ -21,27 +20,36 @@ export class AuthService {
 
   constructor() { }
 
-  register(userData: any) {
-    return this.http.post(this.url + '/register', userData);
+  register(userData:any){
+    return this.http.post(this.url + '/register',userData);
   }
 
   login(credentials: any) {
-    // --- 2. INTERCEPTAMOS EL LOGIN PARA GUARDAR EL USUARIO ---
     return this.http.post<any>(this.url + '/login', credentials).pipe(
       tap((response) => {
-        console.log('AuthService: Login exitoso', response);
-        
-        // AQUÍ ASUMO QUE TU BACKEND DEVUELVE UN OBJETO CON 'username'
-        // Si tu backend devuelve el nombre en otro campo (ej: response.email), cámbialo aquí.
-        if (response && response.username) {
+        console.log('AuthService: Respuesta del servidor:', response);
+
+        // 1. CORRECCIÓN VITAL: Verificamos que 'response' exista antes de tocarlo
+        if (!response) {
+          console.warn('¡OJO! El login fue exitoso (200 OK) pero el servidor no devolvió datos.');
+          // Asumimos que el login es válido aunque no haya token visible
+          this._currentUser.next(credentials.username);
+          return; // Salimos para evitar el error
+        }
+
+        // 2. Guardamos el usuario (usando el del servidor O el del formulario)
+        if (response.username) {
           this._currentUser.next(response.username); 
         } else {
-          // Si el backend no devuelve el nombre, usamos el que envió el usuario en el form
           this._currentUser.next(credentials.username);
         }
 
-        // Opcional: Si recibes un token, podrías guardarlo en localStorage aquí
-        if (response.token) localStorage.setItem('token', response.token);
+        // 3. Guardamos el token SOLO si existe (evitamos el crash)
+        if (response.token) {
+            localStorage.setItem('token', response.token);
+        } else {
+            console.log('No vino token en la respuesta (o el backend lo envió en los headers).');
+        }
       })
     );
   }
@@ -55,4 +63,5 @@ export class AuthService {
     // OJO: Aquí NO borramos la huella. 
     // La huella se queda en el BiometricService para el próximo inicio rápido.
   }
+  
 }

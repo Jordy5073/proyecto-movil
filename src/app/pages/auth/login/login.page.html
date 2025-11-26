@@ -5,58 +5,68 @@
 
         <ion-card>
           <ion-card-header>
-            <ion-card-title class="ion-text-center">Iniciar Sesión</ion-card-title>
+            <ion-card-title class="ion-text-center">Bienvenido</ion-card-title>
           </ion-card-header>
 
           <ion-card-content>
+
+            @if (hasBiometric && !showManualLogin) {
+            <div class="ion-text-center ion-padding">
+              <ion-icon name="finger-print" style="font-size: 64px; color: var(--ion-color-primary);"></ion-icon>
+              <p class="ion-margin-vertical">Ingresa con tu huella</p>
+
+              <ion-button expand="block" size="large" (click)="loginWithBiometrics()" [disabled]="isLoggingIn">
+                Usar Huella / FaceID
+                <ion-spinner *ngIf="isLoggingIn" name="crescent" slot="end"></ion-spinner>
+              </ion-button>
+
+              <ion-button fill="clear" class="ion-margin-top" (click)="toggleManualLogin()" [disabled]="isLoggingIn">
+                Usar contraseña
+              </ion-button>
+            </div>
+            }
+
+            @if (showManualLogin) {
             <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
               <ion-item [class.ion-invalid]="username.invalid && username.touched">
-                <ion-input label="username o email" labelPlacement="stacked" formControlName="username" required
-                  autocomplete="username">
-                </ion-input>
+                <ion-input label="Usuario / Email" labelPlacement="stacked" formControlName="username"></ion-input>
               </ion-item>
               @if (username.invalid && username.touched) {
-                <div class="error-messages ion-padding-start">
-                  @if (username.hasError('required')) { <ion-note color="danger">Obligatorio.</ion-note> }
-                  @if (username.hasError('missingAtSymbol')) { <ion-note color="danger">Falta el símbolo '@'.</ion-note> }
-                  @if (username.hasError('missingDomainDot')) { <ion-note color="danger">Falta el '.' después del '@'.</ion-note> }
-                  @if (username.hasError('invalidStructure')) { <ion-note color="danger">Formato de correo incompleto.</ion-note> }
-                  @if (username.hasError('domainNotAllowed')) { <ion-note color="danger">Dominio no permitido.</ion-note> }
-                </div>
+              <ion-note color="danger" class="ion-padding-start">Email inválido</ion-note>
               }
 
               <ion-item [class.ion-invalid]="password.invalid && password.touched" class="ion-margin-top">
-                <ion-input label="Contraseña" labelPlacement="stacked" type="password" formControlName="password"
-                  required autocomplete="current-password">
+                <ion-input label="Contraseña" labelPlacement="stacked" type="password" formControlName="password">
                   <ion-input-password-toggle slot="end"></ion-input-password-toggle>
                 </ion-input>
               </ion-item>
               @if (password.invalid && password.touched) {
-                <div class="error-messages ion-padding-start">
-                  @if (password.hasError('required')) { <ion-note color="danger">Obligatoria.</ion-note> }
-                  @if (password.hasError('minlength')) { <ion-note color="danger">Mínimo 6 caracteres.</ion-note> }
-                  @if (password.hasError('whitespace')) { <ion-note color="danger">No puede ser solo espacios.</ion-note> }
-                </div>
+              <ion-note color="danger" class="ion-padding-start">Contraseña requerida</ion-note>
               }
 
               <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="isLoggingIn">
                 <span *ngIf="!isLoggingIn">Entrar</span>
                 <ion-spinner *ngIf="isLoggingIn" name="crescent"></ion-spinner>
               </ion-button>
-
             </form>
 
             @if (hasBiometric) {
-              <div class="ion-margin-top ion-text-center">
-                <p style="color: var(--ion-color-medium); font-size: 0.9em; margin-bottom: 10px;">— O ingresa con —</p>
-                
-                <ion-button expand="block" fill="outline" color="secondary" (click)="loginWithBiometrics()" [disabled]="isLoggingIn">
-                  <ion-icon slot="start" name="fingerprint"></ion-icon>
-                  Huella / Face ID
-                </ion-button>
-              </div>
+            <div class="ion-text-center ion-margin-top">
+              <ion-button fill="clear" (click)="toggleManualLogin()">
+                <ion-icon slot="start" name="finger-print"></ion-icon>
+                Usar Huella
+              </ion-button>
+            </div>
             }
+            }
+            <div class="ion-text-center ion-margin-top">
+              <p style="font-size: 0.9em; color: var(--ion-color-medium);">¿No tienes cuenta?</p>
+
+              <ion-button fill="clear" size="small" [routerLink]="['/register']">
+                Crear Usuario
+              </ion-button>
+            </div>
 
           </ion-card-content>
         </ion-card>

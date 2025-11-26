@@ -1,13 +1,13 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core'; // Quitamos OnInit
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ViewWillEnter } from '@ionic/angular'; // Importamos ViewWillEnter
 import {
   IonContent, IonCard, IonCardHeader, IonCardContent, IonCardTitle,
-  IonLabel, IonItem, IonInput, IonButton, IonList, IonNote, IonGrid, 
-  IonRow, IonCol, IonHeader, IonToolbar, IonTitle, IonInputPasswordToggle, 
-  IonIcon, IonSpinner
+  IonItem, IonInput, IonButton, IonGrid, IonRow, IonCol, 
+  IonInputPasswordToggle, IonIcon, IonSpinner, IonNote, IonLabel
 } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
 import { fingerPrint } from 'ionicons/icons';
@@ -21,13 +21,13 @@ import { noWhitespaceValidator, emailStructureValidator, allowedEmailDomains } f
   styleUrls: ['./login.page.scss'],
   standalone: true,
   imports: [
-    IonTitle, IonToolbar, IonHeader, CommonModule, ReactiveFormsModule,
+    CommonModule, ReactiveFormsModule,
     IonContent, IonCard, IonCardHeader, IonCardContent, IonCardTitle,
-    IonLabel, IonItem, IonInput, IonButton, IonList, IonNote, IonGrid, 
-    IonRow, IonCol, IonInputPasswordToggle, IonIcon, IonSpinner
+    IonItem, IonInput, IonButton, IonGrid, IonRow, IonCol, 
+    IonInputPasswordToggle, IonIcon, IonSpinner, IonNote, IonLabel, RouterModule
   ],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements ViewWillEnter { 
 
   private formBuilder = inject(FormBuilder);
   private alertCtrl = inject(AlertController);
@@ -38,26 +38,45 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   hasBiometric = false; 
   isLoggingIn = false;
+  showManualLogin = true; // Nueva variable para controlar la vista limpia
 
   constructor() { 
     addIcons({ fingerPrint });
+    this.buildForm();
   }
 
-  ngOnInit() {
-    this.buildForm();
+  // Se ejecuta CADA VEZ que la vista se vuelve activa (incluso al volver de logout)
+  ionViewWillEnter() {
+    this.loginForm.reset(); // Limpiamos el form anterior
+    this.isLoggingIn = false;
     this.checkBiometric();
   }
 
-  // --- AQUÍ ESTÁ EL CAMBIO DE LÓGICA ---
   async checkBiometric() {
-    // 1. ¿El celular tiene hardware?
-    const hardwareAvailable = await this.bioService.isAvailable();
+    console.log('--- DIAGNÓSTICO INICIO ---');
     
-    // 2. ¿El usuario ya guardó sus datos antes?
-    const dataSaved = this.bioService.hasSavedCredentials();
+    // 1. Revisamos la marca en localStorage directamente
+    const marcaGuardada = localStorage.getItem('bio_setup_complete');
+    console.log('1. Marca en localStorage:', marcaGuardada);
 
-    // SOLO mostramos el botón si AMBAS son verdaderas
-    this.hasBiometric = hardwareAvailable.isAvailable && dataSaved;
+    // 2. Revisamos el hardware
+    const hardware = await this.bioService.isAvailable();
+    console.log('2. Resultado Hardware:', hardware);
+
+    // 3. Decisión
+    const tieneDatos = marcaGuardada === 'true';
+    const tieneHardware = hardware?.isAvailable;
+
+    if (tieneHardware && tieneDatos) {
+      console.log('>>> RESULTADO: MOSTRANDO BOTÓN HUELLA');
+      this.hasBiometric = true;
+      this.showManualLogin = false; // OCULTAMOS el formulario manual
+    } else {
+      console.log('>>> RESULTADO: OCULTANDO BOTÓN (Falta algo)');
+      this.hasBiometric = false;
+      this.showManualLogin = true;  // MOSTRAMOS el formulario manual
+    }
+    console.log('--- DIAGNÓSTICO FIN ---');
   }
 
   buildForm() {
@@ -75,34 +94,41 @@ export class LoginComponent implements OnInit {
     });
   }
   
-  // Getters para el HTML
   get username() { return this.loginForm.controls['username']; }
   get password() { return this.loginForm.controls['password']; }
 
+  // Método unificado para loguear
   async onSubmit() {
     this.loginForm.markAllAsTouched();
     if (this.loginForm.invalid) return;
 
     this.isLoggingIn = true;
-    const userData = this.loginForm.value;
+    const userData = this.loginForm.getRawValue();
 
     this.authService.login(userData).subscribe({
       next: async (response) => {
-        console.log('Login exitoso');
+        // YA NO IMPORTA SI response ES NULL. 
+        // Si entramos aquí, es porque el servidor dijo "Código 200: Contraseña Correcta".
+        console.log('Login exitoso (Backend respondió 200 OK)');
         
-        // Si el login manual funcionó, guardamos la huella para la PRÓXIMA vez
+        // 1. Guardamos la huella
         const hardware = await this.bioService.isAvailable();
-        if (hardware.isAvailable) {
-           await this.bioService.saveCredentials(userData.username, userData.password);
-           // No necesitamos actualizar hasBiometric a true aquí inmediatamente,
-           // porque el usuario ya entró. La próxima vez que abra la app, saldrá el botón.
+        if (hardware?.isAvailable) {
+            try {
+              // Esperamos a guardar antes de irnos
+              await this.bioService.saveCredentials(userData.username, userData.password);
+            } catch (e) {
+              console.error('No se pudo actualizar la huella', e);
+            }
         }
 
+        // 2. Redirigimos
         this.router.navigate(['/tabs']);
         this.isLoggingIn = false;
       },
       error: (err) => {
         console.error('Error login:', err);
+        // Solo mostramos error si el servidor responde 401 o 403 (Contraseña mal)
         this.mostrarAlerta('Error', 'Credenciales incorrectas.');
         this.isLoggingIn = false;
       }
@@ -110,29 +136,31 @@ export class LoginComponent implements OnInit {
   }
 
   async loginWithBiometrics() {
-    const credentials = await this.bioService.getCredentials();
+    try {
+      const credentials = await this.bioService.getCredentials();
+      console.log('DATOS RECUPERADOS:', JSON.stringify(credentials));
 
-    if (credentials) {
-      this.isLoggingIn = true;
-      this.loginForm.patchValue({
-        username: credentials.username,
-        password: credentials.password
-      });
-
-      this.authService.login({ 
-        username: credentials.username, 
-        password: credentials.password 
-      }).subscribe({
-        next: () => {
-          this.router.navigate(['/tabs']);
-          this.isLoggingIn = false;
-        },
-        error: () => {
-          this.mostrarAlerta('Error', 'Credenciales expiradas.');
-          this.isLoggingIn = false;
-        }
-      });
+      if (credentials && credentials.username && credentials.password) {
+        // TRUCO: Rellenamos el formulario con los datos recuperados
+        this.loginForm.patchValue({
+          username: credentials.username,
+          password: credentials.password
+        });
+        
+        // Y llamamos a onSubmit(). Así usamos LA MISMA lógica exacta.
+        this.onSubmit(); 
+      } else {
+        this.mostrarAlerta('Error', 'No se pudieron recuperar las credenciales.');
+        this.showManualLogin = true; // Mostramos el form por si falla la huella
+      }
+    } catch (error) {
+      this.mostrarAlerta('Error', 'Falló la autenticación biométrica');
+      this.showManualLogin = true;
     }
+  }
+
+  toggleManualLogin() {
+    this.showManualLogin = !this.showManualLogin;
   }
 
   async mostrarAlerta(header: string, message: string) {

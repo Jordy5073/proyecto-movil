@@ -45,6 +45,7 @@ export function allowedEmailDomains(domains: string[]): ValidatorFn {
 
     return set.has(domain) ? null : {domainNotAllowed: {allowed: domains}};
   };
+  
 }
 /**
  * estructura del email (contiene '@' y '.' después).
@@ -80,6 +81,18 @@ export function emailStructureValidator(): ValidatorFn {
 
     // las 3
     return null;
+  };
+  
+}
+export function matchPasswordsValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const password = control.get('password')?.value;
+    const confirmPassword = control.get('confirmPassword')?.value;
+
+    // Si no coinciden y ambos tienen valor, devolvemos error
+    return password && confirmPassword && password !== confirmPassword
+      ? { passwordsDontMatch: true }
+      : null;
   };
 }
     

@@ -10,6 +10,7 @@ export interface SavedPhoto {
   fileName: string;
   webviewPath: string;
   timestamp: number;
+  fotoBase64?: string
 }
 
 @Injectable({providedIn: 'root'})
@@ -97,7 +98,7 @@ export class DeviceService {
 
     await Toast.show({text: 'Foto guardada localmente'});
 
-    return {fileName, webviewPath, timestamp: Date.now()};
+    return {fileName, webviewPath, timestamp: Date.now(),fotoBase64:base64};
   }
 
   async loadAllPhotos(): Promise<SavedPhoto[]> {

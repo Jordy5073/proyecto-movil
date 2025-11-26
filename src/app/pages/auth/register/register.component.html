@@ -1,0 +1,69 @@
+<ion-content class="ion-padding">
+  <div class="flex-center full-height">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title class="ion-text-center">Crear Cuenta</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+          <ion-item [class.ion-invalid]="username?.invalid && username?.touched">
+            <ion-input 
+              label="Correo (Gmail)" 
+              labelPlacement="stacked" 
+              type="email" 
+              formControlName="username"
+              placeholder="ejemplo@gmail.com">
+            </ion-input>
+          </ion-item>
+          <div class="error-msg" *ngIf="username?.errors?.['required'] && username?.touched">
+            El correo es obligatorio.
+          </div>
+          <div class="error-msg" *ngIf="username?.errors?.['email'] && username?.touched">
+            Formato de correo inválido.
+          </div>
+
+          <ion-item class="ion-margin-top" [class.ion-invalid]="password?.invalid && password?.touched">
+            <ion-input 
+              label="Contraseña" 
+              labelPlacement="stacked" 
+              type="password" 
+              formControlName="password">
+              <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+            </ion-input>
+          </ion-item>
+          <div class="error-msg" *ngIf="password?.errors?.['minlength'] && password?.touched">
+            Mínimo 6 caracteres.
+          </div>
+
+          <ion-item class="ion-margin-top" [class.ion-invalid]="(confirmPassword?.touched || registerForm.touched) && registerForm.errors?.['passwordsDontMatch']">
+            <ion-input 
+              label="Confirmar Contraseña" 
+              labelPlacement="stacked" 
+              type="password" 
+              formControlName="confirmPassword">
+              <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+            </ion-input>
+          </ion-item>
+          
+          <div class="error-msg" *ngIf="registerForm.errors?.['passwordsDontMatch'] && (confirmPassword?.touched || password?.touched)">
+            Las contraseñas no coinciden.
+          </div>
+
+          <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="registerForm.invalid || isLoading">
+            <span *ngIf="!isLoading">Registrarse</span>
+            <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+          </ion-button>
+
+          <div class="ion-text-center ion-margin-top">
+            <a [routerLink]="['/login']" style="text-decoration: none; font-size: 0.9em;">
+              ¿Ya tienes cuenta? Inicia sesión
+            </a>
+          </div>
+
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

@@ -4,9 +4,8 @@ import { NativeBiometric } from '@capgo/capacitor-native-biometric';
 @Injectable({ providedIn: 'root' })
 export class BiometricService {
   
-  private serviceName = 'com.yavirac.jsv'; // Asegúrate que coincida con capacitor.config.ts
+  private serviceName = 'com.yavirac.jsv'; 
 
-  // Verifica solo si el HARDWARE existe
   async isAvailable() {
     try {
       return await NativeBiometric.isAvailable();
@@ -15,46 +14,48 @@ export class BiometricService {
     }
   }
 
-  // Verifica si ya hemos guardado credenciales antes (para saber si mostrar el botón)
   hasSavedCredentials(): boolean {
     return localStorage.getItem('bio_setup_complete') === 'true';
   }
 
-  // Guarda credenciales en el chip Y pone la marca en localStorage
   async saveCredentials(username: string, tokenOrPass: string) {
     try {
+      // Borramos primero para asegurar que no se duplique o corrompa
+      await this.deleteCredentials(); 
+      
       await NativeBiometric.setCredentials({
         username: username,
         password: tokenOrPass,
         server: this.serviceName,
       });
-      
-      // MARCA IMPORTANTE: Decimos "Sí, ya configuré la huella"
       localStorage.setItem('bio_setup_complete', 'true');
-
     } catch (e) {
-      console.error("Error guardando credenciales biométricas", e);
+      console.error("Error guardando credenciales", e);
     }
   }
 
-  // Recupera credenciales (Forzando el prompt de seguridad)
+  // Asegúrate de que tu función getCredentials se vea así:
   async getCredentials() {
     try {
-      // 1. Forzamos que aparezca la ventanita "Pon tu huella"
+      // 1. PASO NUEVO: Obligamos a mostrar la pantalla de huella primero
       await NativeBiometric.verifyIdentity({
-        reason: 'Confirma tu identidad',
-        title: 'Iniciar Sesión',
-        subtitle: 'Seguridad',
-        description: 'Usa tu huella para entrar'
+        reason: "Escanea tu huella para iniciar sesión",
+        title: "Autenticación Requerida",
+        subtitle: "Ingreso Biométrico",
+        description: "Toca el sensor"
       });
 
-      // 2. Si pasa la huella, recuperamos los datos
+      // 2. Si la huella es correcta, AHORA pedimos los datos guardados
+      // (El celular ya no pedirá huella dos veces, o si lo hace, es por seguridad extrema)
       const credentials = await NativeBiometric.getCredentials({
         server: this.serviceName,
       });
+      
       return credentials;
 
-    } catch {
+    } catch (error) {
+      // Si el usuario pone "Cancelar" o la huella falla
+      console.log('Autenticación biométrica cancelada o fallida');
       return null;
     }
   }
@@ -62,7 +63,6 @@ export class BiometricService {
   async deleteCredentials() {
     try {
        await NativeBiometric.deleteCredentials({ server: this.serviceName });
-       // Si borramos las credenciales, quitamos la marca
        localStorage.removeItem('bio_setup_complete');
     } catch (e) {}
   }

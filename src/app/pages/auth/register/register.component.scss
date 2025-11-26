@@ -1,0 +1,12 @@
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.error-msg {
+  color: var(--ion-color-danger);
+  font-size: 0.8rem;
+  padding-left: 16px;
+  margin-top: 4px;
+}

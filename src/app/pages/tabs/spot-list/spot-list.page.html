@@ -1,13 +1,56 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>spot-list</ion-title>
+  <ion-toolbar color="primary">
+    <ion-title>Lugares Descubiertos</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">spot-list</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" class="ion-padding-top">
+  
+  @if (places.length === 0) {
+    <div class="ion-text-center ion-padding icon-container">
+      <ion-icon name="location" style="font-size: 64px; color: #ccc;"></ion-icon>
+      <p class="ion-text-medium">Aún no hay lugares registrados.</p>
+      <p><small>Ve a la pestaña "Sugerir" para agregar uno.</small></p>
+    </div>
+  }
+
+  @for (place of places; track place.id) {
+    <ion-card>
+      @if (place.fotoUrl) {
+        <img [src]="place.fotoUrl" alt="Foto del lugar" style="height: 200px; width: 100%; object-fit: cover;"/>
+      } @else {
+        <div style="height: 150px; background: #e0e0e0; display: flex; align-items: center; justify-content: center;">
+          <ion-icon name="image-outline" style="font-size: 40px; color: #999;"></ion-icon>
+        </div>
+      }
+
+      <ion-card-header>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <ion-card-subtitle color="secondary">{{ place.categoria }}</ion-card-subtitle>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <ion-icon name="star" color="warning"></ion-icon>
+            <ion-text>{{ place.calificacion }}</ion-text>
+          </div>
+        </div>
+        <ion-card-title>{{ place.nombre }}</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <p class="ion-text-wrap">{{ place.descripcion }}</p>
+        
+        <div class="ion-margin-top" style="display: flex; align-items: center; gap: 8px; color: #666;">
+          <ion-icon name="location"></ion-icon>
+          <small>{{ place.direccion }}</small>
+        </div>
+
+        <div class="ion-text-end ion-margin-top">
+          <ion-button fill="clear" color="danger" size="small" (click)="borrarLugar(place.id)">
+            <ion-icon slot="start" name="trash"></ion-icon>
+            Eliminar
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  }
+
 </ion-content>

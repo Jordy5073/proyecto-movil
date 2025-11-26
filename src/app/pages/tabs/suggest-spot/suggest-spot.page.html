@@ -12,10 +12,10 @@
         <ion-card>
           <ion-card-header>
             <ion-card-title class="ion-text-center">
-              Sugerir un Lugar Turístico
+              {{ isEditing ? 'Editar Lugar' : 'Sugerir un Lugar Turístico' }}
             </ion-card-title>
             <ion-card-subtitle class="ion-text-center">
-              Comparte tu descubrimiento
+              {{ isEditing ? 'Modificando información existente' : 'Comparte tu descubrimiento' }}
             </ion-card-subtitle>
           </ion-card-header>
 
@@ -53,8 +53,8 @@
                 </ion-item>
                 @if (descripcion?.invalid && descripcion?.touched) {
                   <div class="ion-padding-start">
-                     @if (descripcion?.hasError("required")) { <ion-note color="danger">Descripción obligatoria.</ion-note> }
-                     @if (descripcion?.hasError("minWords")) { <ion-note color="danger">Mínimo 8 palabras.</ion-note> }
+                      @if (descripcion?.hasError("required")) { <ion-note color="danger">Descripción obligatoria.</ion-note> }
+                      @if (descripcion?.hasError("minWords")) { <ion-note color="danger">Mínimo 8 palabras.</ion-note> }
                   </div>
                 }
 
@@ -79,9 +79,6 @@
                   </ion-card>
                 }
 
-                <ion-item lines="full">
-                  <ion-input label="O pegar URL (Opcional)" type="url" labelPlacement="floating" formControlName="fotoUrl" placeholder="http://..."></ion-input>
-                </ion-item>
 
 
                 <div class="section-divider ion-margin-top">
@@ -108,10 +105,7 @@
                     </ion-note>
                   </div>
                 }
-
-                <ion-item lines="full">
-                  <ion-input label="Dirección escrita" type="text" labelPlacement="floating" formControlName="direccion" placeholder="Ej: Av. Amazonas y Patria"></ion-input>
-                </ion-item>
+                
                 @if (direccion?.invalid && direccion?.touched) {
                   <div class="ion-padding-start">
                     <ion-note color="danger">La dirección es obligatoria.</ion-note>
@@ -132,20 +126,57 @@
                 </ion-item>
                 @if (contacto?.invalid && contacto?.touched) {
                   <div class="ion-padding-start">
-                     @if (contacto?.hasError("required")) { <ion-note color="danger">Email requerido.</ion-note> }
-                     @if (contacto?.hasError("email")) { <ion-note color="danger">Formato inválido.</ion-note> }
+                      @if (contacto?.hasError("required")) { <ion-note color="danger">Email requerido.</ion-note> }
+                      @if (contacto?.hasError("email")) { <ion-note color="danger">Formato inválido.</ion-note> }
                   </div>
                 }
 
-                <ion-button expand="full" type="submit" class="ion-margin-top" size="large" [disabled]="suggestForm.invalid">
-                  Enviar Sugerencia
+                <ion-button expand="full" type="submit" class="ion-margin-top" size="large" [disabled]="suggestForm.invalid" [color]="isEditing ? 'warning' : 'primary'">
+                  {{ isEditing ? 'Actualizar Lugar' : 'Enviar Sugerencia' }}
                 </ion-button>
+
+                @if (isEditing) {
+                  <ion-button expand="full" fill="outline" color="medium" class="ion-margin-top" (click)="cancelEdit()">
+                    <ion-icon slot="start" name="close-circle"></ion-icon>
+                    Cancelar Edición
+                  </ion-button>
+                }
 
               </ion-list>
             </form>
 
           </ion-card-content>
         </ion-card>
+
+
+
+        <ion-list [inset]="true">
+          @for (place of places; track place.id) {
+            <ion-item-sliding>
+              <ion-item>
+                <ion-label>
+                  <h2>{{ place.nombre }}</h2>
+                  <p>{{ place.categoria }} • <ion-text color="warning">★ {{ place.calificacion }}</ion-text></p>
+                </ion-label>
+                <ion-button fill="clear" slot="end" (click)="onEdit(place)">
+                  <ion-icon slot="icon-only" name="pencil"></ion-icon>
+                </ion-button>
+              </ion-item>
+
+              <ion-item-options side="end">
+                <ion-item-option color="danger" (click)="onDelete(place.id)">
+                  <ion-icon slot="icon-only" name="trash"></ion-icon>
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
+          } @empty {
+            <ion-item lines="none">
+              <ion-label class="ion-text-center" color="medium">
+                <p>No hay lugares registrados aún.</p>
+              </ion-label>
+            </ion-item>
+          }
+        </ion-list>
 
       </ion-col>
     </ion-row>
